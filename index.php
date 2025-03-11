@@ -3,9 +3,29 @@ include('partials/header.php');
 include('partials/sidebar.php');
 include ('database/database.php'); // Database connection
 
-// Fetch students from database
-$result = $conn->query("SELECT * FROM students");
+if (isset($_GET['query'])) {
+    $searchQuery = $_GET['query'];
+    
+    // Modify this SQL query based on your database table
+    $sql = "SELECT * FROM students WHERE 
+        first_name LIKE '%$searchQuery%' OR 
+        last_name LIKE '%$searchQuery%' OR 
+        student_id LIKE '%$searchQuery%' OR 
+        email LIKE '%$searchQuery%' OR 
+        course LIKE '%$searchQuery%' OR 
+        phone LIKE '%$searchQuery%' OR 
+        age LIKE '%$searchQuery%' OR 
+        year_level LIKE '%$searchQuery%'";
+    $result = mysqli_query($conn, $sql);
+} else {
+    $sql = "SELECT * FROM students"; // Default: Show all students
+    $result = mysqli_query($conn, $sql);
+}
 ?>
+
+
+
+
 
 <main id="main" class="main">
     <div class="pagetitle">
@@ -16,6 +36,7 @@ $result = $conn->query("SELECT * FROM students");
                 <li class="breadcrumb-item">Tables</li>
                 <li class="breadcrumb-item active">Student List</li>
             </ol>
+            
         </nav>
     </div>
 
@@ -222,6 +243,7 @@ $result = $conn->query("SELECT * FROM students");
     </div>
 </div>
     </section>
+
 </main>
 
 <?php include('partials/footer.php');?>
@@ -301,4 +323,11 @@ $result = $conn->query("SELECT * FROM students");
             }
         });
     });
-</script>
+</script><?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    echo "Welcome, User! <a href='auth/logout.php'>Logout</a>";
+} else {
+    echo "<a href='auth/login.php'>Login</a>";
+}
+?>
